@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Die Rollnys &ndash; Trip 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2F1ED;
+    --paper:#FFFFFF;
+    --navy:#1A1A1A;
+    --navy-soft:#333333;
+    --gold:#D9A400;
+    --gold-light:#F0BC17;
+    --teal:#1F8A3D;
+    --teal-light:#2CAA4E;
+    --red:#D6236F;
+    --pink:#D6236F;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:#000000;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(214,35,111,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(31,138,61,0.12), transparent 45%);
+    font-family:'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    color:var(--cream);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .screen{width:100%; max-width:560px; display:none;}
+  .screen.active{display:block;}
+
+  /* ---------- START SCREEN: ruhige editorial Einladung ---------- */
+  .card{
+    background:var(--paper);
+    border:1px solid rgba(0,0,0,0.08);
+    border-radius:8px;
+    padding:48px 40px 40px;
+    text-align:center;
+    position:relative;
+    box-shadow:0 30px 70px rgba(0,0,0,0.6);
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:14px; left:14px; right:14px; bottom:14px;
+    border:1px solid rgba(214,35,111,0.25);
+    border-radius:4px;
+    pointer-events:none;
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:11px;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    color:var(--pink);
+    font-weight:600;
+    margin:0 0 18px;
+  }
+
+  .title{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-weight:700;
+    font-size:clamp(24px, 6vw, 34px);
+    line-height:1.3;
+    letter-spacing:-0.01em;
+    margin:0 0 14px;
+    color:var(--navy);
+  }
+  .title em{
+    font-style:normal;
+    font-weight:700;
+    color:var(--teal);
+  }
+
+  .divider{
+    width:56px; height:3px;
+    background:var(--gold-light);
+    border-radius:2px;
+    margin:0 auto 20px;
+  }
+
+  .subtitle{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:13px;
+    font-weight:400;
+    color:var(--navy-soft);
+    margin:0 0 34px;
+    line-height:1.8;
+    opacity:0.75;
+  }
+
+  .go-btn{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:14px;
+    font-weight:500;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    background:var(--teal);
+    color:var(--paper);
+    border:none;
+    padding:16px 44px;
+    border-radius:2px;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.15s ease;
+  }
+  .go-btn:hover{background:var(--teal-light); transform:translateY(-1px);}
+  .go-btn:active{transform:translateY(0px) scale(0.98);}
+
+  .go-hint{
+    margin-top:16px;
+    font-size:12px;
+    color:var(--navy);
+    opacity:0.35;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    letter-spacing:0.04em;
+  }
+
+  /* ---------- RESULT SCREEN: boarding pass ---------- */
+  .pass-wrap{display:flex; justify-content:center; animation:fadeUp 0.6s ease both;}
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(16px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .pass{
+    background:var(--paper);
+    color:var(--navy);
+    width:100%;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid rgba(0,0,0,0.08);
+    box-shadow:0 30px 70px rgba(0,0,0,0.6);
+    position:relative;
+  }
+  .pass-top{
+    background:var(--paper);
+    color:var(--navy);
+    padding:20px 24px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:3px solid var(--teal);
+  }
+  .airline{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:-0.01em;
+    color:var(--pink);
+  }
+  .airline small{
+    display:block;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-weight:500;
+    font-size:11px;
+    letter-spacing:0.1em;
+    margin-top:2px;
+    color:var(--teal);
+    opacity:0.9;
+  }
+  .pass-class{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    background:var(--teal);
+    color:var(--paper);
+    padding:5px 10px;
+    border-radius:3px;
+    font-weight:700;
+  }
+
+  .pass-body{padding:26px 24px 10px;}
+  .route{display:flex; align-items:center; justify-content:space-between; margin-bottom:22px;}
+  .route-point{flex:1;}
+  .route-code{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:34px;
+    font-weight:700;
+    letter-spacing:0.02em;
+  }
+  .route-code.mystery{color:var(--teal);}
+  .route-city{font-size:12px; color:rgba(11,31,58,0.55); margin-top:2px;}
+  .route-plane{flex:0 0 60px; text-align:center; color:var(--gold-light); font-size:20px; position:relative;}
+  .route-plane .dots{
+    position:absolute; top:50%; left:0; right:0; height:0;
+    border-top:2px dotted rgba(11,31,58,0.25); z-index:0;
+  }
+  .route-plane span{position:relative; background:var(--paper); padding:0 6px; z-index:1;}
+
+  .field-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:16px 12px;
+    margin-bottom:18px;
+  }
+  .field{font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;}
+  .field-label{
+    font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+    color:rgba(11,31,58,0.5); margin-bottom:3px;
+  }
+  .field-value{font-size:14px; font-weight:700;}
+  .field-value.mystery{color:var(--teal);}
+
+  .perforation{
+    position:relative; height:0;
+    border-top:2px dashed rgba(11,31,58,0.22);
+    margin:6px 0 0;
+  }
+  .perforation::before, .perforation::after{
+    content:""; position:absolute; top:-11px;
+    width:22px; height:22px; background:var(--cream);
+    border:1px solid rgba(11,31,58,0.15);
+    border-radius:50%; box-sizing:border-box;
+  }
+  .perforation::before{left:-34px;}
+  .perforation::after{right:-34px;}
+
+  .pass-stub{
+    padding:16px 24px 22px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .barcode{display:flex; gap:2px; align-items:flex-end; height:36px;}
+  .barcode span{display:block; width:3px; background:var(--navy);}
+  .seat-tag{font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace; text-align:right;}
+  .seat-tag .field-label{margin-bottom:2px;}
+  .seat-tag .field-value{font-size:16px;}
+
+  .reveal-note{
+    margin-top:22px;
+    text-align:center;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:12px;
+    line-height:1.7;
+    color:rgba(247,241,228,0.55);
+    letter-spacing:0.02em;
+  }
+  .reveal-note strong{color:var(--gold-light); font-weight:500;}
+
+  @media (max-width:420px){
+    .field-grid{grid-template-columns:repeat(2, 1fr);}
+    .card{padding:36px 24px 30px;}
+    .pass-body{padding:22px 16px 6px;}
+    .pass-top{padding:16px 18px;}
+    .pass-stub{padding:14px 16px 18px;}
+    .perforation::before{left:-22px;}
+    .perforation::after{right:-22px;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ SCREEN 1: START (kein Flughafenbezug) ============ -->
+  <section class="screen active" id="screen-start">
+    <div class="card">
+      <p class="eyebrow">Die Rollnys pr&auml;sentieren</p>
+      <h1 class="title">Das gro&szlig;e<br><em>Kegeltourquiz</em></h1>
+      <div class="divider"></div>
+      <p class="subtitle">F&uuml;nf Fragen. Ein Geheimnis.<br>Am Ende erfahrt ihr, was euch erwartet.</p>
+      <button class="go-btn" id="go-btn" onclick="showResult()">Los geht's</button>
+      <p class="go-hint">Aufl&ouml;sung wartet am Ende</p>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2: RESULT / BOARDING PASS ============ -->
+  <section class="screen" id="screen-result">
+    <div class="pass-wrap">
+      <div class="pass">
+        <div class="pass-top">
+          <div class="airline">
+            Rollny's International Express
+            <small>RIE &middot; boarding pass</small>
+          </div>
+          <div class="pass-class">Kegelklub</div>
+        </div>
+
+        <div class="pass-body">
+          <div class="route">
+            <div class="route-point">
+              <div class="route-code">DUS</div>
+              <div class="route-city">D&uuml;sseldorf</div>
+            </div>
+            <div class="route-plane">
+              <span class="dots"></span>
+              <span>&#9992;</span>
+            </div>
+            <div class="route-point" style="text-align:right;">
+              <div class="route-code mystery">???</div>
+              <div class="route-city">Mystery Destination</div>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <div class="field-label">Passagierin</div>
+              <div class="field-value">Rollny Crew</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Flugnummer</div>
+              <div class="field-value">RIE 2026</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Gate</div>
+              <div class="field-value mystery">???</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Boarding</div>
+              <div class="field-value">17:00 Uhr</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Datum</div>
+              <div class="field-value">23.10.2026</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Status</div>
+              <div class="field-value mystery">geheim</div>
+            </div>
+          </div>
+
+          <div class="perforation"></div>
+        </div>
+
+        <div class="pass-stub">
+          <div class="barcode" id="barcode"></div>
+          <div class="seat-tag">
+            <div class="field-label">Sitzplatz</div>
+            <div class="field-value">&uuml;berall</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="reveal-note">
+      Platzhalter-Auflösungstext &mdash; hier stehen später die echten Rahmeninfos:<br>
+      <strong>Treffpunkt DUS &middot; 23.10.2026, 17:00 Uhr &middot; was mitzubringen ist</strong>
+    </p>
+  </section>
+
+<script>
+  function showResult(){
+    var startScreen = document.getElementById('screen-start');
+    var resultScreen = document.getElementById('screen-result');
+    if(startScreen){ startScreen.classList.remove('active'); }
+    if(resultScreen){ resultScreen.classList.add('active'); }
+    window.scrollTo(0, 0);
+  }
+
+  function buildBarcode(){
+    var bc = document.getElementById('barcode');
+    if(!bc){ return; }
+    var widths = [3,3,6,3,3,9,3,6,3,3,3,9,3,6,3,3,3,3,9,3,6,3];
+    for(var i=0; i<widths.length; i++){
+      var bar = document.createElement('span');
+      bar.style.width = widths[i] + 'px';
+      bar.style.height = (18 + Math.random()*18) + 'px';
+      bc.appendChild(bar);
+    }
+  }
+
+  var goBtn = document.getElementById('go-btn');
+  if(goBtn){
+    goBtn.addEventListener('click', showResult);
+  }
+
+  buildBarcode();
+</script>
+
+</body>
+</html>
