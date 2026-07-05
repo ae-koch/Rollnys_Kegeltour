@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Die Rollnys &ndash; Trip 2026</title>
+<title>Die Rollnys &ndash; Kegeltour 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
   .screen{width:100%; max-width:560px; display:none;}
   .screen.active{display:block;}
 
-  /* ---------- START SCREEN: ruhige editorial Einladung ---------- */
+  /* ---------- START SCREEN ---------- */
   .card{
     background:var(--paper);
     border:1px solid rgba(0,0,0,0.08);
@@ -257,24 +257,302 @@
     .perforation::before{left:-22px;}
     .perforation::after{right:-22px;}
   }
+
+  /* ---------- DASHBOARD ---------- */
+  #screen-dashboard{max-width:640px;}
+
+  .dash-header{
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .dash-eyebrow{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:11px;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    color:var(--pink);
+    font-weight:600;
+    margin:0 0 10px;
+  }
+  .dash-title{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-weight:700;
+    font-size:clamp(20px, 5vw, 26px);
+    color:var(--cream);
+    margin:0 0 8px;
+  }
+  .dash-progress{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:13px;
+    color:rgba(247,241,228,0.5);
+  }
+  .dash-progress strong{color:var(--gold-light); font-weight:700;}
+
+  .circle-wrap{
+    position:relative;
+    width:100%;
+    max-width:400px;
+    aspect-ratio:1 / 1;
+    margin:0 auto 24px;
+  }
+
+  .puzzle-card{
+    position:absolute;
+    width:104px;
+    height:104px;
+    border-radius:50%;
+    background:var(--paper);
+    border:1px solid rgba(0,0,0,0.08);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    cursor:pointer;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow:0 12px 26px rgba(0,0,0,0.35);
+    padding:8px;
+  }
+  .puzzle-card:hover{transform:translate(-50%, -50%) scale(1.06); box-shadow:0 16px 32px rgba(0,0,0,0.45); z-index:5;}
+  .puzzle-card:active{transform:translate(-50%, -50%) scale(1.0);}
+
+  .puzzle-card.solved{background:var(--teal);}
+  .puzzle-card.solved .puzzle-num,
+  .puzzle-card.solved .puzzle-label{color:var(--paper);}
+
+  .puzzle-num{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:10px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:rgba(11,31,58,0.4);
+    margin-bottom:4px;
+  }
+  .puzzle-label{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:13px;
+    font-weight:700;
+    color:var(--navy);
+    line-height:1.25;
+  }
+  .puzzle-check{
+    position:absolute;
+    top:6px; right:6px;
+    width:20px; height:20px;
+    border-radius:50%;
+    background:var(--paper);
+    color:var(--teal);
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    opacity:0;
+    transform:scale(0.5);
+    transition:opacity 0.2s ease, transform 0.2s ease;
+  }
+  .puzzle-card.solved .puzzle-check{opacity:1; transform:scale(1);}
+
+  .reveal-cta-wrap{text-align:center;}
+  .reveal-btn{
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%, -50%);
+    width:132px;
+    height:132px;
+    border-radius:50%;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    background:var(--pink);
+    color:var(--paper);
+    border:none;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+    box-shadow:0 16px 34px rgba(214,35,111,0.35);
+  }
+  .reveal-btn:not(:disabled):hover{background:var(--gold-light); transform:translate(-50%, -50%) scale(1.05);}
+  .reveal-btn:disabled{
+    background:rgba(247,241,228,0.12);
+    color:rgba(247,241,228,0.35);
+    cursor:not-allowed;
+    box-shadow:none;
+  }
+  .reveal-hint{
+    margin-top:6px;
+    font-size:11px;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    color:rgba(247,241,228,0.4);
+    letter-spacing:0.04em;
+  }
+
+  /* ---------- PUZZLE MODAL ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.75);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .modal-overlay.active{display:flex;}
+
+  .modal-box{
+    background:var(--paper);
+    color:var(--navy);
+    border-radius:10px;
+    max-width:480px;
+    width:100%;
+    padding:30px 26px 26px;
+    position:relative;
+    box-shadow:0 30px 70px rgba(0,0,0,0.6);
+  }
+
+  .modal-back{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    background:none;
+    border:none;
+    color:rgba(11,31,58,0.45);
+    cursor:pointer;
+    padding:0;
+    margin-bottom:20px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .modal-back:hover{color:var(--navy);}
+
+  .modal-eyebrow{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--pink);
+    font-weight:600;
+    margin:0 0 10px;
+  }
+  .modal-question{
+    font-family:'Space Grotesk', -apple-system, sans-serif;
+    font-size:17px;
+    line-height:1.6;
+    color:var(--navy);
+    margin:0 0 22px;
+  }
+
+  .modal-answer{
+    width:100%;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:14px;
+    padding:12px 14px;
+    border:1px solid rgba(11,31,58,0.2);
+    border-radius:4px;
+    margin-bottom:14px;
+    background:var(--cream);
+    color:var(--navy);
+  }
+  .modal-answer:focus{outline:2px solid var(--teal); outline-offset:1px;}
+
+  .modal-submit{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    background:var(--teal);
+    color:var(--paper);
+    border:none;
+    padding:12px 30px;
+    border-radius:2px;
+    cursor:pointer;
+    width:100%;
+  }
+  .modal-submit:hover{background:var(--teal-light);}
+
+  .modal-feedback{
+    margin-top:14px;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:13px;
+    text-align:center;
+    min-height:18px;
+  }
+  .modal-feedback.correct{color:var(--teal);}
+  .modal-feedback.wrong{color:var(--pink);}
+
+  /* Admin skip: unauffälliger Tap-Punkt unten rechts im Dashboard */
+  .admin-dot{
+    position:fixed;
+    bottom:10px;
+    right:10px;
+    width:28px;
+    height:28px;
+    opacity:0;
+    cursor:default;
+    z-index:50;
+    background:transparent;
+    border:none;
+  }
+
+  @media (max-width:420px){
+    .circle-wrap{max-width:320px;}
+    .puzzle-card{width:86px; height:86px;}
+    .reveal-btn{width:110px; height:110px; font-size:12px;}
+  }
 </style>
 </head>
 <body>
 
-  <!-- ============ SCREEN 1: START (kein Flughafenbezug) ============ -->
+  <!-- ============ SCREEN 1: START ============ -->
   <section class="screen active" id="screen-start">
     <div class="card">
       <p class="eyebrow">Die Rollnys pr&auml;sentieren</p>
       <h1 class="title">Das gro&szlig;e<br><em>Kegeltourquiz</em></h1>
       <div class="divider"></div>
-      <p class="subtitle">F&uuml;nf Fragen. Ein Geheimnis.<br>Am Ende erfahrt ihr, was euch erwartet.</p>
-      <button class="go-btn" id="go-btn" onclick="showResult()">Los geht's</button>
+      <p class="subtitle">F&uuml;nf Fragen stehen euch im Weg.<br>Am Ende erfahrt ihr, was euch erwartet.</p>
+      <button class="go-btn" id="go-btn" onclick="showDashboard()">Los geht's</button>
       <p class="go-hint">Aufl&ouml;sung wartet am Ende</p>
     </div>
   </section>
 
-  <!-- ============ SCREEN 2: RESULT / BOARDING PASS ============ -->
+  <!-- ============ SCREEN 2: DASHBOARD mit 5 Rätsel-Karten ============ -->
+  <section class="screen" id="screen-dashboard">
+    <div class="dash-header">
+      <p class="dash-eyebrow">Die Rollnys &middot; Kegeltourquiz</p>
+      <h2 class="dash-title">W&auml;hle ein R&auml;tsel</h2>
+      <p class="dash-progress"><strong id="solved-count">0</strong> / 5 gel&ouml;st</p>
+    </div>
+
+    <div class="circle-wrap" id="circle-wrap">
+      <!-- Karten werden per JS im Kreis um den Auflösung-Button positioniert -->
+      <button class="reveal-btn" id="reveal-btn" onclick="showResult()" disabled>Aufl&ouml;sung</button>
+    </div>
+    <p class="reveal-hint" style="text-align:center;">Auflösung wird erst freigeschaltet, wenn alle 5 R&auml;tsel gel&ouml;st sind</p>
+  </section>
+
+  <!-- ============ PUZZLE MODAL ============ -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-back" onclick="closeModal()">&larr; Zur&uuml;ck</button>
+      <p class="modal-eyebrow" id="modal-eyebrow">R&auml;tsel Platzhalter</p>
+      <p class="modal-question" id="modal-question">Platzhalter-Frage f&uuml;r dieses R&auml;tsel steht hier.</p>
+      <input type="text" class="modal-answer" id="modal-answer" placeholder="Antwort eingeben...">
+      <button class="modal-submit" onclick="checkAnswer()">Pr&uuml;fen</button>
+      <p class="modal-feedback" id="modal-feedback"></p>
+    </div>
+  </div>
+
+  <!-- Admin-Skip: unauffälliger Tap-Punkt, 5x Tap markiert alle Rätsel als gelöst -->
+  <button class="admin-dot" id="admin-dot" aria-hidden="true"></button>
+
+  <!-- ============ SCREEN 3: RESULT / BOARDING PASS ============ -->
   <section class="screen" id="screen-result">
+    <button class="modal-back" onclick="backToDashboard()" style="margin-bottom:16px; color:rgba(247,241,228,0.55);">&larr; Zur&uuml;ck zu den R&auml;tseln</button>
     <div class="pass-wrap">
       <div class="pass">
         <div class="pass-top">
@@ -348,12 +626,122 @@
   </section>
 
 <script>
-  function showResult(){
-    var startScreen = document.getElementById('screen-start');
-    var resultScreen = document.getElementById('screen-result');
-    if(startScreen){ startScreen.classList.remove('active'); }
-    if(resultScreen){ resultScreen.classList.add('active'); }
+  // ---------- Platzhalter-Rätseldaten ----------
+  // Später hier Titel, Frage und Antwort pro Rätsel eintragen.
+  var PUZZLES = [
+    { id:1, label:"R\u00e4tsel 1", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 1.", answer:"" },
+    { id:2, label:"R\u00e4tsel 2", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 2.", answer:"" },
+    { id:3, label:"R\u00e4tsel 3", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 3.", answer:"" },
+    { id:4, label:"R\u00e4tsel 4", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 4.", answer:"" },
+    { id:5, label:"R\u00e4tsel 5", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 5.", answer:"" }
+  ];
+
+  var solved = {};
+  var currentPuzzleId = null;
+  var adminTapCount = 0;
+  var adminTapTimer = null;
+
+  function showDashboard(){
+    switchScreen('screen-start', 'screen-dashboard');
+    renderCards();
+  }
+
+  function switchScreen(hideId, showId){
+    var hideEl = document.getElementById(hideId);
+    var showEl = document.getElementById(showId);
+    if(hideEl){ hideEl.classList.remove('active'); }
+    if(showEl){ showEl.classList.add('active'); }
     window.scrollTo(0, 0);
+  }
+
+  function renderCards(){
+    var wrap = document.getElementById('circle-wrap');
+    if(!wrap){ return; }
+    // vorhandene Karten entfernen, reveal-btn behalten
+    var existing = wrap.querySelectorAll('.puzzle-card');
+    existing.forEach(function(el){ el.remove(); });
+
+    var total = PUZZLES.length;
+    var radiusPercent = 38; // Abstand der Kartenmitte vom Zentrum, in % der Wrap-Breite
+    PUZZLES.forEach(function(p, i){
+      var angle = (i / total) * 2 * Math.PI - (Math.PI / 2); // oben beginnend, im Uhrzeigersinn
+      var x = 50 + radiusPercent * Math.cos(angle);
+      var y = 50 + radiusPercent * Math.sin(angle);
+
+      var card = document.createElement('div');
+      card.className = 'puzzle-card' + (solved[p.id] ? ' solved' : '');
+      card.setAttribute('data-id', p.id);
+      card.style.left = x + '%';
+      card.style.top = y + '%';
+      card.style.transform = 'translate(-50%, -50%)';
+      card.onclick = function(){ openModal(p.id); };
+      card.innerHTML =
+        '<div class="puzzle-check">&#10003;</div>' +
+        '<div class="puzzle-num">Karte ' + p.id + '</div>' +
+        '<div class="puzzle-label">' + p.label + '</div>';
+      wrap.appendChild(card);
+    });
+    updateProgress();
+  }
+
+  function updateProgress(){
+    var count = Object.keys(solved).filter(function(k){ return solved[k]; }).length;
+    var countEl = document.getElementById('solved-count');
+    if(countEl){ countEl.textContent = count; }
+    var revealBtn = document.getElementById('reveal-btn');
+    if(revealBtn){ revealBtn.disabled = (count < PUZZLES.length); }
+  }
+
+  function openModal(id){
+    currentPuzzleId = id;
+    var puzzle = PUZZLES.filter(function(p){ return p.id === id; })[0];
+    if(!puzzle){ return; }
+    document.getElementById('modal-eyebrow').textContent = puzzle.label;
+    document.getElementById('modal-question').textContent = puzzle.question;
+    var answerInput = document.getElementById('modal-answer');
+    answerInput.value = '';
+    document.getElementById('modal-feedback').textContent = '';
+    document.getElementById('modal-feedback').className = 'modal-feedback';
+    document.getElementById('modal-overlay').classList.add('active');
+    setTimeout(function(){ answerInput.focus(); }, 50);
+  }
+
+  function closeModal(){
+    document.getElementById('modal-overlay').classList.remove('active');
+    currentPuzzleId = null;
+  }
+
+  function checkAnswer(){
+    if(currentPuzzleId === null){ return; }
+    var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
+    if(!puzzle){ return; }
+    var input = document.getElementById('modal-answer').value.trim().toLowerCase();
+    var correct = puzzle.answer.trim().toLowerCase();
+    var feedback = document.getElementById('modal-feedback');
+
+    // Platzhalter-Modus: solange keine Antwort hinterlegt ist, gilt jede Eingabe als richtig,
+    // damit das Dashboard schon vor den finalen Inhalten getestet werden kann.
+    var isPlaceholder = (correct === '');
+
+    if(isPlaceholder || input === correct){
+      solved[puzzle.id] = true;
+      feedback.textContent = 'Richtig!';
+      feedback.className = 'modal-feedback correct';
+      renderCards();
+      setTimeout(closeModal, 700);
+    } else {
+      feedback.textContent = 'Leider falsch, versucht es nochmal.';
+      feedback.className = 'modal-feedback wrong';
+    }
+  }
+
+  function showResult(){
+    switchScreen('screen-dashboard', 'screen-result');
+  }
+
+  function backToDashboard(){
+    switchScreen('screen-result', 'screen-dashboard');
+    renderCards();
   }
 
   function buildBarcode(){
@@ -368,9 +756,26 @@
     }
   }
 
+  // ---------- Admin-Skip ----------
+  // 5x Tap auf den unsichtbaren Punkt unten rechts (innerhalb von 3 Sekunden)
+  // markiert alle Rätsel als gelöst, ohne dass jemand aus der Gruppe es bemerkt.
+  var adminDot = document.getElementById('admin-dot');
+  if(adminDot){
+    adminDot.addEventListener('click', function(){
+      adminTapCount++;
+      clearTimeout(adminTapTimer);
+      adminTapTimer = setTimeout(function(){ adminTapCount = 0; }, 3000);
+      if(adminTapCount >= 5){
+        adminTapCount = 0;
+        PUZZLES.forEach(function(p){ solved[p.id] = true; });
+        renderCards();
+      }
+    });
+  }
+
   var goBtn = document.getElementById('go-btn');
   if(goBtn){
-    goBtn.addEventListener('click', showResult);
+    goBtn.addEventListener('click', showDashboard);
   }
 
   buildBarcode();
