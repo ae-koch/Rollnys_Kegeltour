@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Die Rollnys &ndash; Trip 2026</title>
+<title>Die Rollnys &ndash; Kegeltour 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
@@ -575,9 +575,8 @@
       <p class="eyebrow">Die Rollnys pr&auml;sentieren</p>
       <h1 class="title">Das gro&szlig;e<br><em>Kegeltourquiz</em></h1>
       <div class="divider"></div>
-      <p class="subtitle">F&uuml;nf Fragen. Ein Geheimnis.<br>Am Ende erfahrt ihr, was euch erwartet.</p>
+      <p class="subtitle">F&uuml;nf Fragen warten auf euch.<br>Beantwortet alle richtig, um zu erfahren, was euch erwartet.</p>
       <button class="go-btn" id="go-btn" onclick="showDashboard()">Los geht's</button>
-      <p class="go-hint">Aufl&ouml;sung wartet am Ende</p>
     </div>
   </section>
 
@@ -585,7 +584,7 @@
   <section class="screen" id="screen-dashboard">
     <div class="dash-header">
       <p class="dash-eyebrow">Die Rollnys &middot; Kegeltourquiz</p>
-      <h2 class="dash-title">W&auml;hlt ein R&auml;tsel</h2>
+      <h2 class="dash-title">W&auml;hle ein R&auml;tsel</h2>
       <p class="dash-progress"><strong id="solved-count">0</strong> / 5 gel&ouml;st</p>
     </div>
 
@@ -593,7 +592,7 @@
       <!-- Karten werden per JS im Kreis um den Auflösung-Button positioniert -->
       <button class="reveal-btn" id="reveal-btn" onclick="showResult()" disabled>Aufl&ouml;sung</button>
     </div>
-    <p class="reveal-hint" style="text-align:center;">Erst freigeschaltet, wenn alle 5 R&auml;tsel gel&ouml;st sind</p>
+    <p class="reveal-hint" style="text-align:center;">Aufl&ouml;sung wird erst freigeschaltet, wenn alle 5 R&auml;tsel gel&ouml;st sind</p>
   </section>
 
   <!-- ============ PUZZLE MODAL ============ -->
@@ -761,7 +760,6 @@
       card.onclick = function(){ openModal(p.id); };
       card.innerHTML =
         '<div class="puzzle-check">&#10003;</div>' +
-        '<div class="puzzle-num">Karte ' + p.id + '</div>' +
         '<div class="puzzle-label">' + p.label + '</div>';
       wrap.appendChild(card);
     });
