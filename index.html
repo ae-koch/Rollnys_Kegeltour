@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Die Rollnys &ndash; Kegeltour 2026</title>
+<title>Die Rollnys &ndash; Trip 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
   .screen{width:100%; max-width:560px; display:none;}
   .screen.active{display:block;}
 
-  /* ---------- START SCREEN ---------- */
+  /* ---------- START SCREEN: ruhige editorial Einladung ---------- */
   .card{
     background:var(--paper);
     border:1px solid rgba(0,0,0,0.08);
@@ -238,15 +238,20 @@
   .seat-tag .field-value{font-size:16px;}
 
   .reveal-note{
-    margin-top:22px;
+    margin-top:26px;
     text-align:center;
-    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
-    font-size:12px;
+    font-family:'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size:16px;
     line-height:1.7;
-    color:rgba(247,241,228,0.55);
-    letter-spacing:0.02em;
+    color:rgba(247,241,228,0.92);
+    letter-spacing:0.01em;
+    max-width:480px;
+    margin-left:auto;
+    margin-right:auto;
   }
-  .reveal-note strong{color:var(--gold-light); font-weight:500;}
+  .reveal-note p{margin:0 0 16px;}
+  .reveal-note p:last-child{margin-bottom:0;}
+  .reveal-note strong{color:var(--gold-light); font-weight:700;}
 
   @media (max-width:420px){
     .field-grid{grid-template-columns:repeat(2, 1fr);}
@@ -485,6 +490,62 @@
   .modal-feedback.correct{color:var(--teal);}
   .modal-feedback.wrong{color:var(--pink);}
 
+  /* ---------- Frage 2: Städte-Kästchen ---------- */
+  .city-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(90px, 1fr));
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .city-box{
+    background:rgba(11,31,58,0.08);
+    border:1px solid rgba(11,31,58,0.15);
+    border-radius:6px;
+    padding:14px 8px;
+    text-align:center;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:13px;
+    font-weight:700;
+    color:transparent;
+    transition:background 0.2s ease, color 0.2s ease;
+    user-select:none;
+  }
+  .city-box.revealed{
+    background:var(--teal);
+    color:var(--paper);
+  }
+  .city-progress{
+    text-align:center;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:12px;
+    color:rgba(11,31,58,0.5);
+    margin-bottom:10px;
+  }
+
+  /* ---------- Frage 3: Multiple Choice ---------- */
+  .mc-options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .mc-option{
+    background:var(--cream);
+    border:1px solid rgba(11,31,58,0.2);
+    border-radius:6px;
+    padding:13px 16px;
+    text-align:left;
+    font-family:'Space Grotesk', -apple-system, sans-serif;
+    font-size:14px;
+    color:var(--navy);
+    cursor:pointer;
+    transition:background 0.15s ease, border-color 0.15s ease;
+  }
+  .mc-option:hover{background:#EAE6DA;}
+  .mc-option.selected{border-color:var(--teal); background:rgba(31,138,61,0.1);}
+  .mc-option.correct-answer{border-color:var(--teal); background:var(--teal); color:var(--paper);}
+  .mc-option.wrong-answer{border-color:var(--pink); background:var(--pink); color:var(--paper);}
+
   /* Admin skip: unauffälliger Tap-Punkt unten rechts im Dashboard */
   .admin-dot{
     position:fixed;
@@ -508,13 +569,13 @@
 </head>
 <body>
 
-  <!-- ============ SCREEN 1: START ============ -->
+  <!-- ============ SCREEN 1: START (kein Flughafenbezug) ============ -->
   <section class="screen active" id="screen-start">
     <div class="card">
       <p class="eyebrow">Die Rollnys pr&auml;sentieren</p>
       <h1 class="title">Das gro&szlig;e<br><em>Kegeltourquiz</em></h1>
       <div class="divider"></div>
-      <p class="subtitle">F&uuml;nf Fragen stehen euch im Weg.<br>Am Ende erfahrt ihr, was euch erwartet.</p>
+      <p class="subtitle">F&uuml;nf Fragen. Ein Geheimnis.<br>Am Ende erfahrt ihr, was euch erwartet.</p>
       <button class="go-btn" id="go-btn" onclick="showDashboard()">Los geht's</button>
       <p class="go-hint">Aufl&ouml;sung wartet am Ende</p>
     </div>
@@ -524,7 +585,7 @@
   <section class="screen" id="screen-dashboard">
     <div class="dash-header">
       <p class="dash-eyebrow">Die Rollnys &middot; Kegeltourquiz</p>
-      <h2 class="dash-title">W&auml;hle ein R&auml;tsel</h2>
+      <h2 class="dash-title">W&auml;hlt ein R&auml;tsel</h2>
       <p class="dash-progress"><strong id="solved-count">0</strong> / 5 gel&ouml;st</p>
     </div>
 
@@ -532,7 +593,7 @@
       <!-- Karten werden per JS im Kreis um den Auflösung-Button positioniert -->
       <button class="reveal-btn" id="reveal-btn" onclick="showResult()" disabled>Aufl&ouml;sung</button>
     </div>
-    <p class="reveal-hint" style="text-align:center;">Auflösung wird erst freigeschaltet, wenn alle 5 R&auml;tsel gel&ouml;st sind</p>
+    <p class="reveal-hint" style="text-align:center;">Erst freigeschaltet, wenn alle 5 R&auml;tsel gel&ouml;st sind</p>
   </section>
 
   <!-- ============ PUZZLE MODAL ============ -->
@@ -541,8 +602,7 @@
       <button class="modal-back" onclick="closeModal()">&larr; Zur&uuml;ck</button>
       <p class="modal-eyebrow" id="modal-eyebrow">R&auml;tsel Platzhalter</p>
       <p class="modal-question" id="modal-question">Platzhalter-Frage f&uuml;r dieses R&auml;tsel steht hier.</p>
-      <input type="text" class="modal-answer" id="modal-answer" placeholder="Antwort eingeben...">
-      <button class="modal-submit" onclick="checkAnswer()">Pr&uuml;fen</button>
+      <div id="modal-body"><!-- wird je nach Rätseltyp per JS befüllt --></div>
       <p class="modal-feedback" id="modal-feedback"></p>
     </div>
   </div>
@@ -619,24 +679,49 @@
       </div>
     </div>
 
-    <p class="reveal-note">
-      Platzhalter-Auflösungstext &mdash; hier stehen später die echten Rahmeninfos:<br>
-      <strong>Treffpunkt DUS &middot; 23.10.2026, 17:00 Uhr &middot; was mitzubringen ist</strong>
-    </p>
+    <div class="reveal-note">
+      <p>Wir treffen uns am <strong>Freitag, 23.10.2026 um 17 Uhr</strong> in der Abflughalle am Flughafen D&uuml;sseldorf. Wir empfehlen Anreise mit dem Zug. <strong>Bitte unbedingt p&uuml;nktlich anreisen!</strong></p>
+      <p>Wir werden kurzfristig noch eine Packliste herausgeben. Stellt euch darauf ein, nur ein Gep&auml;ckst&uuml;ck in Handgep&auml;ckgr&ouml;&szlig;e (max. 55 x 40 x 20 cm) sowie ein kleines Gep&auml;ckst&uuml;ck, z.&nbsp;B. Rucksack (max. 40 x 25 x 20), mitzunehmen.</p>
+      <p>Bitte plant den gesamten Sonntag ein, also eine R&uuml;ckkehr am Abend. Falls Fernverkehrsz&uuml;ge gebucht werden m&uuml;ssen, meldet euch direkt bei uns, dann k&ouml;nnen wir euch einen Zeitraum mitteilen.</p>
+      <p>Falls jemand auf gar keinen Fall bleiben kann am Sonntag, besteht die M&ouml;glichkeit, eine fr&uuml;here Ankunft f&uuml;r die Person zu organisieren. Falls das bei jemandem so ist, <strong>SO FR&Uuml;H WIE M&Ouml;GLICH</strong> bei uns melden, damit das organisiert werden kann.</p>
+    </div>
   </section>
 
 <script>
-  // ---------- Platzhalter-Rätseldaten ----------
-  // Später hier Titel, Frage und Antwort pro Rätsel eintragen.
+  // ---------- Rätseldaten ----------
   var PUZZLES = [
-    { id:1, label:"R\u00e4tsel 1", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 1.", answer:"" },
-    { id:2, label:"R\u00e4tsel 2", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 2.", answer:"" },
-    { id:3, label:"R\u00e4tsel 3", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 3.", answer:"" },
-    { id:4, label:"R\u00e4tsel 4", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 4.", answer:"" },
-    { id:5, label:"R\u00e4tsel 5", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 5.", answer:"" }
+    {
+      id:1,
+      label:"R\u00e4tsel 1",
+      type:"text",
+      question:"Wer war im Orga-Team f\u00fcr unsere allererste Kegeltour?",
+      answer:"" // noch offen: solange leer, wird jede Eingabe akzeptiert
+    },
+    {
+      id:2,
+      label:"R\u00e4tsel 2",
+      type:"cities",
+      question:"In welchen Orten haben wir bisher schon gekegelt? Tippt die Orte einzeln ein \u2014 bei jeder richtigen Antwort wird ein K\u00e4stchen aufgedeckt.",
+      cities:["Geldern","Walbeck","Issum","K\u00f6ln","Heidelberg"]
+    },
+    {
+      id:3,
+      label:"R\u00e4tsel 3",
+      type:"choice",
+      question:"Was war ganz am Anfang unser Konzept f\u00fcrs Kegeln?",
+      options:[
+        "immer wo anders",
+        "immer ein anderes Motto",
+        "immer jemand neues zum Gastkegeln"
+      ],
+      correctIndex:1 // "immer ein anderes Motto"
+    },
+    { id:4, label:"R\u00e4tsel 4", type:"text", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 4.", answer:"" },
+    { id:5, label:"R\u00e4tsel 5", type:"text", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 5.", answer:"" }
   ];
 
   var solved = {};
+  var cityProgress = {}; // { puzzleId: [bool, bool, ...] } welche Städte schon aufgedeckt sind
   var currentPuzzleId = null;
   var adminTapCount = 0;
   var adminTapTimer = null;
@@ -657,14 +742,13 @@
   function renderCards(){
     var wrap = document.getElementById('circle-wrap');
     if(!wrap){ return; }
-    // vorhandene Karten entfernen, reveal-btn behalten
     var existing = wrap.querySelectorAll('.puzzle-card');
     existing.forEach(function(el){ el.remove(); });
 
     var total = PUZZLES.length;
-    var radiusPercent = 38; // Abstand der Kartenmitte vom Zentrum, in % der Wrap-Breite
+    var radiusPercent = 38;
     PUZZLES.forEach(function(p, i){
-      var angle = (i / total) * 2 * Math.PI - (Math.PI / 2); // oben beginnend, im Uhrzeigersinn
+      var angle = (i / total) * 2 * Math.PI - (Math.PI / 2);
       var x = 50 + radiusPercent * Math.cos(angle);
       var y = 50 + radiusPercent * Math.sin(angle);
 
@@ -698,41 +782,169 @@
     if(!puzzle){ return; }
     document.getElementById('modal-eyebrow').textContent = puzzle.label;
     document.getElementById('modal-question').textContent = puzzle.question;
-    var answerInput = document.getElementById('modal-answer');
-    answerInput.value = '';
     document.getElementById('modal-feedback').textContent = '';
     document.getElementById('modal-feedback').className = 'modal-feedback';
+
+    var body = document.getElementById('modal-body');
+    body.innerHTML = '';
+
+    if(puzzle.type === 'cities'){
+      renderCitiesBody(puzzle, body);
+    } else if(puzzle.type === 'choice'){
+      renderChoiceBody(puzzle, body);
+    } else {
+      renderTextBody(puzzle, body);
+    }
+
     document.getElementById('modal-overlay').classList.add('active');
-    setTimeout(function(){ answerInput.focus(); }, 50);
   }
 
-  function closeModal(){
-    document.getElementById('modal-overlay').classList.remove('active');
-    currentPuzzleId = null;
+  function renderTextBody(puzzle, body){
+    body.innerHTML =
+      '<input type="text" class="modal-answer" id="modal-answer" placeholder="Antwort eingeben...">' +
+      '<button class="modal-submit" onclick="checkTextAnswer()">Pr\u00fcfen</button>';
+    var input = document.getElementById('modal-answer');
+    input.value = '';
+    input.addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ checkTextAnswer(); }
+    });
+    setTimeout(function(){ input.focus(); }, 50);
   }
 
-  function checkAnswer(){
+  function checkTextAnswer(){
     if(currentPuzzleId === null){ return; }
     var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
     if(!puzzle){ return; }
     var input = document.getElementById('modal-answer').value.trim().toLowerCase();
-    var correct = puzzle.answer.trim().toLowerCase();
+    var correct = (puzzle.answer || '').trim().toLowerCase();
     var feedback = document.getElementById('modal-feedback');
-
-    // Platzhalter-Modus: solange keine Antwort hinterlegt ist, gilt jede Eingabe als richtig,
-    // damit das Dashboard schon vor den finalen Inhalten getestet werden kann.
     var isPlaceholder = (correct === '');
 
     if(isPlaceholder || input === correct){
-      solved[puzzle.id] = true;
+      markSolved(puzzle.id);
       feedback.textContent = 'Richtig!';
       feedback.className = 'modal-feedback correct';
-      renderCards();
       setTimeout(closeModal, 700);
     } else {
       feedback.textContent = 'Leider falsch, versucht es nochmal.';
       feedback.className = 'modal-feedback wrong';
     }
+  }
+
+  function renderCitiesBody(puzzle, body){
+    if(!cityProgress[puzzle.id]){
+      cityProgress[puzzle.id] = puzzle.cities.map(function(){ return false; });
+    }
+    var revealedCount = cityProgress[puzzle.id].filter(Boolean).length;
+
+    var boxesHtml = '<div class="city-grid">';
+    puzzle.cities.forEach(function(city, i){
+      var isRevealed = cityProgress[puzzle.id][i];
+      boxesHtml += '<div class="city-box' + (isRevealed ? ' revealed' : '') + '">' +
+        (isRevealed ? city : '?') + '</div>';
+    });
+    boxesHtml += '</div>';
+
+    body.innerHTML =
+      '<p class="city-progress">' + revealedCount + ' / ' + puzzle.cities.length + ' gefunden</p>' +
+      boxesHtml +
+      '<input type="text" class="modal-answer" id="modal-answer" placeholder="Ort eingeben...">' +
+      '<button class="modal-submit" onclick="checkCityAnswer()">Pr\u00fcfen</button>';
+
+    var input = document.getElementById('modal-answer');
+    input.addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ checkCityAnswer(); }
+    });
+    setTimeout(function(){ input.focus(); }, 50);
+  }
+
+  function normalizeCity(str){
+    return str.trim().toLowerCase()
+      .replace(/ä/g,'a').replace(/ö/g,'o').replace(/ü/g,'u').replace(/ß/g,'ss');
+  }
+
+  function checkCityAnswer(){
+    if(currentPuzzleId === null){ return; }
+    var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
+    if(!puzzle){ return; }
+    var input = normalizeCity(document.getElementById('modal-answer').value);
+    var feedback = document.getElementById('modal-feedback');
+
+    var matchIndex = -1;
+    puzzle.cities.forEach(function(city, i){
+      if(normalizeCity(city) === input && !cityProgress[puzzle.id][i]){
+        matchIndex = i;
+      }
+    });
+
+    if(matchIndex >= 0){
+      cityProgress[puzzle.id][matchIndex] = true;
+      document.getElementById('modal-answer').value = '';
+      renderCitiesBody(puzzle, document.getElementById('modal-body'));
+
+      var allFound = cityProgress[puzzle.id].every(Boolean);
+      if(allFound){
+        markSolved(puzzle.id);
+        document.getElementById('modal-feedback').textContent = 'Alle Orte gefunden!';
+        document.getElementById('modal-feedback').className = 'modal-feedback correct';
+        setTimeout(closeModal, 900);
+      } else {
+        document.getElementById('modal-feedback').textContent = 'Richtig! Weiter geht\u2019s.';
+        document.getElementById('modal-feedback').className = 'modal-feedback correct';
+      }
+    } else {
+      feedback.textContent = 'Leider falsch oder schon gefunden, versucht es nochmal.';
+      feedback.className = 'modal-feedback wrong';
+    }
+  }
+
+  function renderChoiceBody(puzzle, body){
+    var html = '<div class="mc-options">';
+    puzzle.options.forEach(function(opt, i){
+      html += '<button class="mc-option" data-index="' + i + '" onclick="selectChoice(' + i + ')">' + opt + '</button>';
+    });
+    html += '</div>';
+    body.innerHTML = html;
+  }
+
+  function selectChoice(index){
+    if(currentPuzzleId === null){ return; }
+    var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
+    if(!puzzle){ return; }
+    var feedback = document.getElementById('modal-feedback');
+    var buttons = document.querySelectorAll('.mc-option');
+
+    // Platzhalter-Modus: solange correctIndex nicht gesetzt ist, gilt jede Auswahl als richtig
+    var isPlaceholder = (puzzle.correctIndex === null || puzzle.correctIndex === undefined);
+    var isCorrect = isPlaceholder || (index === puzzle.correctIndex);
+
+    buttons.forEach(function(btn){ btn.onclick = null; }); // weitere Klicks sperren bis Modal neu öffnet
+
+    if(isCorrect){
+      buttons[index].classList.add('correct-answer');
+      markSolved(puzzle.id);
+      feedback.textContent = 'Richtig!';
+      feedback.className = 'modal-feedback correct';
+      setTimeout(closeModal, 800);
+    } else {
+      buttons[index].classList.add('wrong-answer');
+      if(!isPlaceholder){
+        buttons[puzzle.correctIndex].classList.add('correct-answer');
+      }
+      feedback.textContent = 'Leider falsch.';
+      feedback.className = 'modal-feedback wrong';
+      setTimeout(function(){ renderChoiceBody(puzzle, document.getElementById('modal-body')); }, 1200);
+    }
+  }
+
+  function markSolved(puzzleId){
+    solved[puzzleId] = true;
+    renderCards();
+  }
+
+  function closeModal(){
+    document.getElementById('modal-overlay').classList.remove('active');
+    currentPuzzleId = null;
   }
 
   function showResult(){
