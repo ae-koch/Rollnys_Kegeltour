@@ -905,7 +905,7 @@
     if(currentPuzzleId === null){ return; }
     var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
     if(!puzzle){ return; }
-    var input = document.getElementById('modal-answer').value.trim().toLowerCase();
+    var rawValue = document.getElementById('modal-answer').value;
     var feedback = document.getElementById('modal-feedback');
 
     // Unterstützt sowohl ein einzelnes "answer"-Feld als auch ein "answers"-Array (ODER-Logik).
@@ -913,7 +913,16 @@
     validAnswers = validAnswers.filter(function(a){ return a !== ''; }).map(function(a){ return a.trim().toLowerCase(); });
 
     var isPlaceholder = (validAnswers.length === 0);
-    var isCorrect = isPlaceholder || validAnswers.indexOf(input) !== -1;
+
+    // Eingabe in einzelne Fragmente zerlegen (Komma/Zeilenumbruch/"und"-getrennt),
+    // damit auch mehrere Namen auf einmal eingegeben werden können. Es reicht,
+    // wenn eines der Fragmente zu einer gültigen Antwort passt (ODER-Logik).
+    var fragments = splitMultiAnswer(rawValue).map(function(f){ return f.toLowerCase(); });
+    if(fragments.length === 0 && rawValue.trim() !== ''){
+      fragments = [rawValue.trim().toLowerCase()];
+    }
+
+    var isCorrect = isPlaceholder || fragments.some(function(f){ return validAnswers.indexOf(f) !== -1; });
 
     if(isCorrect){
       markSolved(puzzle.id);
@@ -943,7 +952,7 @@
     body.innerHTML =
       '<p class="city-progress">' + revealedCount + ' / ' + puzzle.cities.length + ' gefunden</p>' +
       boxesHtml +
-      '<input type="text" class="modal-answer" id="modal-answer" placeholder="Ort eingeben...">' +
+      '<input type="text" class="modal-answer" id="modal-answer" placeholder="Ort eingeben (oder mehrere, mit Komma getrennt)...">' +
       '<button class="modal-submit" onclick="checkCityAnswer()">Pr\u00fcfen</button>';
 
     var input = document.getElementById('modal-answer');
@@ -958,22 +967,42 @@
       .replace(/ä/g,'a').replace(/ö/g,'o').replace(/ü/g,'u').replace(/ß/g,'ss');
   }
 
+  // Zerlegt eine Eingabe wie "Köln, Geldern und Issum" in einzelne Begriffe.
+  // Trennt an Komma, Zeilenumbruch, Semikolon oder dem Wort "und" — Leerzeichen
+  // innerhalb eines Ortsnamens (z.B. "New York") bleiben dabei erhalten.
+  function splitMultiAnswer(raw){
+    return raw
+      .split(/[,;\n]+|\bund\b/gi)
+      .map(function(s){ return s.trim(); })
+      .filter(function(s){ return s.length > 0; });
+  }
+
   function checkCityAnswer(){
     if(currentPuzzleId === null){ return; }
     var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
     if(!puzzle){ return; }
-    var input = normalizeCity(document.getElementById('modal-answer').value);
+    var rawValue = document.getElementById('modal-answer').value;
+    var fragments = splitMultiAnswer(rawValue);
     var feedback = document.getElementById('modal-feedback');
 
-    var matchIndex = -1;
-    puzzle.cities.forEach(function(city, i){
-      if(normalizeCity(city) === input && !cityProgress[puzzle.id][i]){
-        matchIndex = i;
+    if(fragments.length === 0){ return; }
+
+    var anyMatch = false;
+    fragments.forEach(function(frag){
+      var input = normalizeCity(frag);
+      var matchIndex = -1;
+      puzzle.cities.forEach(function(city, i){
+        if(normalizeCity(city) === input && !cityProgress[puzzle.id][i]){
+          matchIndex = i;
+        }
+      });
+      if(matchIndex >= 0){
+        cityProgress[puzzle.id][matchIndex] = true;
+        anyMatch = true;
       }
     });
 
-    if(matchIndex >= 0){
-      cityProgress[puzzle.id][matchIndex] = true;
+    if(anyMatch){
       document.getElementById('modal-answer').value = '';
       renderCitiesBody(puzzle, document.getElementById('modal-body'));
 
@@ -1091,7 +1120,7 @@
       '<img class="puzzle-image" src="' + puzzle.image + '" alt="R\u00e4tselbild" onerror="this.style.display=\'none\'; this.insertAdjacentHTML(\'afterend\', \'<p style=\\\'text-align:center;font-family:JetBrains Mono,monospace;font-size:12px;color:rgba(11,31,58,0.5);margin-bottom:12px;\\\'>Bild ' + puzzle.image + ' noch nicht hochgeladen</p>\');">' +
       '<p class="image-progress">' + foundCount + ' / ' + puzzle.requiredAnswers.length + ' Namen gefunden</p>' +
       (chipsHtml ? '<div class="image-answer-list">' + chipsHtml + '</div>' : '') +
-      '<input type="text" class="modal-answer" id="modal-answer" placeholder="Name eingeben...">' +
+      '<input type="text" class="modal-answer" id="modal-answer" placeholder="Name eingeben (oder mehrere, mit Komma getrennt)...">' +
       '<button class="modal-submit" onclick="checkImageAnswer()">Pr\u00fcfen</button>';
 
     var input = document.getElementById('modal-answer');
@@ -1105,18 +1134,28 @@
     if(currentPuzzleId === null){ return; }
     var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
     if(!puzzle){ return; }
-    var input = document.getElementById('modal-answer').value.trim().toLowerCase();
+    var rawValue = document.getElementById('modal-answer').value;
+    var fragments = splitMultiAnswer(rawValue);
     var feedback = document.getElementById('modal-feedback');
 
-    var matchIndex = -1;
-    puzzle.requiredAnswers.forEach(function(name, i){
-      if(name.trim().toLowerCase() === input && !imageFoundAnswers[puzzle.id][i]){
-        matchIndex = i;
+    if(fragments.length === 0){ return; }
+
+    var anyMatch = false;
+    fragments.forEach(function(frag){
+      var input = frag.toLowerCase();
+      var matchIndex = -1;
+      puzzle.requiredAnswers.forEach(function(name, i){
+        if(name.trim().toLowerCase() === input && !imageFoundAnswers[puzzle.id][i]){
+          matchIndex = i;
+        }
+      });
+      if(matchIndex >= 0){
+        imageFoundAnswers[puzzle.id][matchIndex] = true;
+        anyMatch = true;
       }
     });
 
-    if(matchIndex >= 0){
-      imageFoundAnswers[puzzle.id][matchIndex] = true;
+    if(anyMatch){
       document.getElementById('modal-answer').value = '';
       renderImageMultiBody(puzzle, document.getElementById('modal-body'));
 
