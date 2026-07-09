@@ -152,6 +152,19 @@
     justify-content:space-between;
     border-bottom:3px solid var(--teal);
   }
+  .airline-group{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .airline-logo{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid var(--navy);
+    flex-shrink:0;
+  }
   .airline{
     font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
     font-weight:700;
@@ -546,6 +559,53 @@
   .mc-option.correct-answer{border-color:var(--teal); background:var(--teal); color:var(--paper);}
   .mc-option.wrong-answer{border-color:var(--pink); background:var(--pink); color:var(--paper);}
 
+  /* ---------- Frage 4: Slider ---------- */
+  .slider-value{
+    text-align:center;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:40px;
+    font-weight:700;
+    color:var(--navy);
+    margin-bottom:6px;
+  }
+  .slider-value span{color:var(--pink);}
+  .slider-range{
+    width:100%;
+    margin:14px 0 22px;
+    accent-color:var(--teal);
+  }
+
+  /* ---------- Frage 5: Bild + Mehrfachantwort ---------- */
+  .puzzle-image{
+    width:100%;
+    border-radius:8px;
+    margin-bottom:16px;
+    display:block;
+    border:1px solid rgba(11,31,58,0.12);
+  }
+  .image-answer-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .image-answer-chip{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:13px;
+    background:var(--teal);
+    color:var(--paper);
+    border-radius:6px;
+    padding:8px 12px;
+    text-align:center;
+  }
+  .image-progress{
+    text-align:center;
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:12px;
+    color:rgba(11,31,58,0.5);
+    margin-bottom:10px;
+  }
+
   /* Admin skip: unauffälliger Tap-Punkt unten rechts im Dashboard */
   .admin-dot{
     position:fixed;
@@ -615,9 +675,12 @@
     <div class="pass-wrap">
       <div class="pass">
         <div class="pass-top">
-          <div class="airline">
-            Rollny's International Express
-            <small>RIE &middot; boarding pass</small>
+          <div class="airline-group">
+            <img class="airline-logo" src="kegellogo.jpg" alt="Die Rollnys Logo" onerror="this.style.display='none';">
+            <div class="airline">
+              Rollny's International Express
+              <small>RIE &middot; boarding pass</small>
+            </div>
           </div>
           <div class="pass-class">Kegelklub</div>
         </div>
@@ -693,14 +756,14 @@
       id:1,
       label:"R\u00e4tsel 1",
       type:"text",
-      question:"Wer war im Orga-Team f\u00fcr unsere allererste Kegeltour?",
-      answer:"" // noch offen: solange leer, wird jede Eingabe akzeptiert
+      question:"Wer war im originalen Orga-Team f\u00fcr unsere allererste Kegeltour?",
+      answers:["Bea","Pia","Sarah I"] // eine der Antworten reicht (ODER-Logik)
     },
     {
       id:2,
       label:"R\u00e4tsel 2",
       type:"cities",
-      question:"In welchen Orten haben wir bisher schon gekegelt? Tippe die Orte einzeln ein \u2014 bei jeder richtigen Antwort wird ein K\u00e4stchen aufgedeckt.",
+      question:"In welchen Orten haben wir bisher schon gekegelt? Tippt die Orte einzeln ein \u2014 bei jeder richtigen Antwort wird ein K\u00e4stchen aufgedeckt.",
       cities:["Geldern","Walbeck","Issum","K\u00f6ln","Heidelberg"]
     },
     {
@@ -715,8 +778,23 @@
       ],
       correctIndex:1 // "immer ein anderes Motto"
     },
-    { id:4, label:"R\u00e4tsel 4", type:"text", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 4.", answer:"" },
-    { id:5, label:"R\u00e4tsel 5", type:"text", question:"Platzhalter-Frage f\u00fcr R\u00e4tsel 5.", answer:"" }
+    {
+      id:4,
+      label:"R\u00e4tsel 4",
+      type:"slider",
+      question:"Wie viele Mitglieder hat unser Kegelclub?",
+      min:1,
+      max:30,
+      answer:14
+    },
+    {
+      id:5,
+      label:"R\u00e4tsel 5",
+      type:"image-multi",
+      question:"Wen haben wir denn hier?",
+      image:"raetsel-bild.jpg",
+      requiredAnswers:["Marie","Bea"] // beide müssen genannt werden (UND-Logik)
+    }
   ];
 
   var solved = {};
@@ -790,6 +868,10 @@
       renderCitiesBody(puzzle, body);
     } else if(puzzle.type === 'choice'){
       renderChoiceBody(puzzle, body);
+    } else if(puzzle.type === 'slider'){
+      renderSliderBody(puzzle, body);
+    } else if(puzzle.type === 'image-multi'){
+      renderImageMultiBody(puzzle, body);
     } else {
       renderTextBody(puzzle, body);
     }
@@ -814,11 +896,16 @@
     var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
     if(!puzzle){ return; }
     var input = document.getElementById('modal-answer').value.trim().toLowerCase();
-    var correct = (puzzle.answer || '').trim().toLowerCase();
     var feedback = document.getElementById('modal-feedback');
-    var isPlaceholder = (correct === '');
 
-    if(isPlaceholder || input === correct){
+    // Unterstützt sowohl ein einzelnes "answer"-Feld als auch ein "answers"-Array (ODER-Logik).
+    var validAnswers = puzzle.answers || (puzzle.answer !== undefined ? [puzzle.answer] : []);
+    validAnswers = validAnswers.filter(function(a){ return a !== ''; }).map(function(a){ return a.trim().toLowerCase(); });
+
+    var isPlaceholder = (validAnswers.length === 0);
+    var isCorrect = isPlaceholder || validAnswers.indexOf(input) !== -1;
+
+    if(isCorrect){
       markSolved(puzzle.id);
       feedback.textContent = 'Richtig!';
       feedback.className = 'modal-feedback correct';
@@ -938,6 +1025,105 @@
   function markSolved(puzzleId){
     solved[puzzleId] = true;
     renderCards();
+  }
+
+  // ---------- Frage 4: Slider ----------
+  function renderSliderBody(puzzle, body){
+    var startVal = Math.round((puzzle.min + puzzle.max) / 2);
+    body.innerHTML =
+      '<div class="slider-value"><span id="slider-display">' + startVal + '</span></div>' +
+      '<input type="range" class="slider-range" id="modal-slider" min="' + puzzle.min + '" max="' + puzzle.max + '" value="' + startVal + '">' +
+      '<button class="modal-submit" onclick="checkSliderAnswer()">Best&auml;tigen</button>';
+
+    var slider = document.getElementById('modal-slider');
+    var display = document.getElementById('slider-display');
+    slider.addEventListener('input', function(){
+      display.textContent = slider.value;
+    });
+  }
+
+  function checkSliderAnswer(){
+    if(currentPuzzleId === null){ return; }
+    var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
+    if(!puzzle){ return; }
+    var value = parseInt(document.getElementById('modal-slider').value, 10);
+    var feedback = document.getElementById('modal-feedback');
+    var isPlaceholder = (puzzle.answer === undefined || puzzle.answer === null);
+
+    if(isPlaceholder || value === puzzle.answer){
+      markSolved(puzzle.id);
+      feedback.textContent = 'Richtig!';
+      feedback.className = 'modal-feedback correct';
+      setTimeout(closeModal, 700);
+    } else {
+      feedback.textContent = 'Leider falsch, versuche es nochmal.';
+      feedback.className = 'modal-feedback wrong';
+    }
+  }
+
+  // ---------- Frage 5: Bild + Mehrfachantwort (UND-Logik) ----------
+  var imageFoundAnswers = {}; // { puzzleId: [bool, bool, ...] }
+
+  function renderImageMultiBody(puzzle, body){
+    if(!imageFoundAnswers[puzzle.id]){
+      imageFoundAnswers[puzzle.id] = puzzle.requiredAnswers.map(function(){ return false; });
+    }
+    var foundCount = imageFoundAnswers[puzzle.id].filter(Boolean).length;
+
+    var chipsHtml = '';
+    puzzle.requiredAnswers.forEach(function(name, i){
+      if(imageFoundAnswers[puzzle.id][i]){
+        chipsHtml += '<div class="image-answer-chip">' + name + ' &#10003;</div>';
+      }
+    });
+
+    body.innerHTML =
+      '<img class="puzzle-image" src="' + puzzle.image + '" alt="R\u00e4tselbild" onerror="this.style.display=\'none\'; this.insertAdjacentHTML(\'afterend\', \'<p style=\\\'text-align:center;font-family:JetBrains Mono,monospace;font-size:12px;color:rgba(11,31,58,0.5);margin-bottom:12px;\\\'>Bild ' + puzzle.image + ' noch nicht hochgeladen</p>\');">' +
+      '<p class="image-progress">' + foundCount + ' / ' + puzzle.requiredAnswers.length + ' Namen gefunden</p>' +
+      (chipsHtml ? '<div class="image-answer-list">' + chipsHtml + '</div>' : '') +
+      '<input type="text" class="modal-answer" id="modal-answer" placeholder="Name eingeben...">' +
+      '<button class="modal-submit" onclick="checkImageAnswer()">Pr\u00fcfen</button>';
+
+    var input = document.getElementById('modal-answer');
+    input.addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ checkImageAnswer(); }
+    });
+    setTimeout(function(){ input.focus(); }, 50);
+  }
+
+  function checkImageAnswer(){
+    if(currentPuzzleId === null){ return; }
+    var puzzle = PUZZLES.filter(function(p){ return p.id === currentPuzzleId; })[0];
+    if(!puzzle){ return; }
+    var input = document.getElementById('modal-answer').value.trim().toLowerCase();
+    var feedback = document.getElementById('modal-feedback');
+
+    var matchIndex = -1;
+    puzzle.requiredAnswers.forEach(function(name, i){
+      if(name.trim().toLowerCase() === input && !imageFoundAnswers[puzzle.id][i]){
+        matchIndex = i;
+      }
+    });
+
+    if(matchIndex >= 0){
+      imageFoundAnswers[puzzle.id][matchIndex] = true;
+      document.getElementById('modal-answer').value = '';
+      renderImageMultiBody(puzzle, document.getElementById('modal-body'));
+
+      var allFound = imageFoundAnswers[puzzle.id].every(Boolean);
+      if(allFound){
+        markSolved(puzzle.id);
+        document.getElementById('modal-feedback').textContent = 'Richtig, alle gefunden!';
+        document.getElementById('modal-feedback').className = 'modal-feedback correct';
+        setTimeout(closeModal, 900);
+      } else {
+        document.getElementById('modal-feedback').textContent = 'Richtig! Weiter geht\u2019s.';
+        document.getElementById('modal-feedback').className = 'modal-feedback correct';
+      }
+    } else {
+      feedback.textContent = 'Leider falsch oder schon genannt, versuche es nochmal.';
+      feedback.className = 'modal-feedback wrong';
+    }
   }
 
   function closeModal(){
