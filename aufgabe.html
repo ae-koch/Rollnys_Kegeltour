@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deine Aufgabe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F2F1ED;
+    --paper:#FFFFFF;
+    --navy:#1A1A1A;
+    --gold:#D9A400;
+    --gold-light:#F0BC17;
+    --teal:#1F8A3D;
+    --pink:#D6236F;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:#000000;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(214,35,111,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(31,138,61,0.12), transparent 45%);
+    font-family:'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    color:var(--cream);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .card{
+    background:var(--paper);
+    color:var(--navy);
+    border:1px solid rgba(0,0,0,0.08);
+    border-radius:8px;
+    padding:44px 32px;
+    max-width:480px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 30px 70px rgba(0,0,0,0.6);
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:11px;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    color:var(--pink);
+    font-weight:600;
+    margin:0 0 16px;
+  }
+
+  .task-name{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:14px;
+    font-weight:700;
+    color:var(--teal);
+    margin:0 0 20px;
+  }
+
+  .task-text{
+    font-size:17px;
+    line-height:1.7;
+    color:var(--navy);
+    margin:0;
+    white-space:pre-line;
+  }
+
+  .error-text{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:14px;
+    color:rgba(26,26,26,0.5);
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card" id="card">
+    <p class="eyebrow">Die Rollnys &middot; Kegeltour 2026</p>
+    <div id="content">
+      <!-- wird per JS befüllt -->
+    </div>
+  </div>
+
+<script>
+  // ---------- Personalisierte Aufgaben ----------
+  // Jeder Code führt zu genau einer Aufgabe. Codes sind zufällig, damit
+  // niemand aus Spaß eine fremde Aufgabe durchprobiert.
+  var TASKS = {
+    "fe2b104": { name:"Aufgabe 1", text:"Platzhalter-Aufgabentext f\u00fcr Person 1." },
+    "fcifvzc": { name:"Aufgabe 2", text:"Platzhalter-Aufgabentext f\u00fcr Person 2." },
+    "t20i4z9": { name:"Aufgabe 3", text:"Platzhalter-Aufgabentext f\u00fcr Person 3." },
+    "w2kebk5": { name:"Aufgabe 4", text:"Platzhalter-Aufgabentext f\u00fcr Person 4." },
+    "f17k0la": { name:"Aufgabe 5", text:"Platzhalter-Aufgabentext f\u00fcr Person 5." },
+    "0ck9629": { name:"Aufgabe 6", text:"Platzhalter-Aufgabentext f\u00fcr Person 6." },
+    "y4bsezz": { name:"Aufgabe 7", text:"Platzhalter-Aufgabentext f\u00fcr Person 7." },
+    "l8ajihq": { name:"Aufgabe 8", text:"Platzhalter-Aufgabentext f\u00fcr Person 8." },
+    "4qpp0pp": { name:"Aufgabe 9", text:"Platzhalter-Aufgabentext f\u00fcr Person 9." },
+    "5ccr6lu": { name:"Aufgabe 10", text:"Platzhalter-Aufgabentext f\u00fcr Person 10." },
+    "evez8wb": { name:"Aufgabe 11", text:"Platzhalter-Aufgabentext f\u00fcr Person 11." },
+    "psg1ql0": { name:"Aufgabe 12", text:"Platzhalter-Aufgabentext f\u00fcr Person 12." }
+  };
+
+  function getCodeFromUrl(){
+    var params = new URLSearchParams(window.location.search);
+    return params.get('id');
+  }
+
+  function render(){
+    var code = getCodeFromUrl();
+    var content = document.getElementById('content');
+
+    if(!code){
+      content.innerHTML =
+        '<p class="error-text">Kein Code gefunden. Bitte den QR-Code auf deiner Bordkarte erneut scannen.</p>';
+      return;
+    }
+
+    var task = TASKS[code];
+    if(!task){
+      content.innerHTML =
+        '<p class="error-text">Unbekannter Code. Bitte pr\u00fcfe, ob der QR-Code korrekt gescannt wurde.</p>';
+      return;
+    }
+
+    content.innerHTML =
+      '<p class="task-name">' + task.name + '</p>' +
+      '<p class="task-text">' + task.text + '</p>';
+  }
+
+  render();
+</script>
+
+</body>
+</html>
