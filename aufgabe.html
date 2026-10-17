@@ -117,6 +117,21 @@
     color:rgba(26,26,26,0.5);
     line-height:1.6;
   }
+
+  .btn{
+    margin-top:28px;
+    background:var(--pink);
+    color:#fff;
+    border:0;
+    border-radius:6px;
+    padding:14px 28px;
+    font-family:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:0.08em;
+    cursor:pointer;
+  }
+  .btn:active{opacity:0.8;}
 </style>
 </head>
 <body>
@@ -214,8 +229,11 @@
       return;
     }
 
-    var html =
+    var introHtml =
       '<p class="intro" style="white-space:pre-line;">' + escapeHtml(INTRO) + '</p>' +
+      '<button type="button" class="btn" id="revealBtn" onclick="showRole()">Meine Rolle enth\u00fcllen</button>';
+
+    var html =
       '<div class="divider"></div>' +
       '<p class="lead-in">Du bist f\u00fcr das Wochenende\u2026</p>' +
       '<h1 class="role-title">' + escapeHtml(task.title) + '</h1>' +
@@ -229,7 +247,12 @@
         '</div>';
     }
 
-    content.innerHTML = html;
+    content.innerHTML = introHtml;
+    window.showRole = function(){
+      var btn = document.getElementById('revealBtn');
+      if(btn){ btn.parentNode.removeChild(btn); }
+      content.insertAdjacentHTML('beforeend', html);
+    };
   }
 
   render();
