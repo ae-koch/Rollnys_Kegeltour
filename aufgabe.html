@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Deine Aufgabe</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
@@ -38,8 +39,8 @@
     color:var(--navy);
     border:1px solid rgba(0,0,0,0.08);
     border-radius:8px;
-    padding:44px 32px;
-    max-width:480px;
+    padding:40px 30px;
+    max-width:500px;
     width:100%;
     text-align:center;
     box-shadow:0 30px 70px rgba(0,0,0,0.6);
@@ -52,13 +53,36 @@
     text-transform:uppercase;
     color:var(--pink);
     font-weight:600;
-    margin:0 0 16px;
+    margin:0 0 18px;
   }
 
-  .task-name{
+  .intro{
+    font-size:15px;
+    line-height:1.65;
+    color:var(--navy);
+    margin:0;
+  }
+
+  .divider{
+    width:56px; height:3px;
+    background:var(--gold-light);
+    border-radius:2px;
+    margin:26px auto 22px;
+  }
+
+  .lead-in{
     font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
-    font-size:14px;
+    font-size:12px;
+    letter-spacing:0.08em;
+    color:rgba(26,26,26,0.55);
+    margin:0 0 8px;
+  }
+
+  .role-title{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:clamp(22px, 6vw, 28px);
     font-weight:700;
+    line-height:1.25;
     color:var(--teal);
     margin:0 0 20px;
   }
@@ -70,6 +94,22 @@
     margin:0;
     white-space:pre-line;
   }
+
+  .extra{
+    margin-top:28px;
+    padding-top:22px;
+    border-top:1px dashed rgba(26,26,26,0.25);
+  }
+  .extra-label{
+    font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--pink);
+    font-weight:700;
+    margin:0 0 10px;
+  }
+  .extra .task-text{font-size:16px;}
 
   .error-text{
     font-family:'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
@@ -89,22 +129,68 @@
   </div>
 
 <script>
-  // ---------- Personalisierte Aufgaben ----------
-  // Jeder Code führt zu genau einer Aufgabe. Codes sind zufällig, damit
-  // niemand aus Spaß eine fremde Aufgabe durchprobiert.
+  // Erklärungstext, bei allen gleich
+  var INTRO = "Willkommen zur Kegeltour 2026 - wie du vielleicht schon auf deiner Boardingkarte entdeckt hast, geht es dieses Jahr zur Traumdestination ✨Düsseldorf✨! Wir sind als Planungskomitee leider etwas überfordert, alle anfallenden Aufgaben dieses Jahr zu erfüllen, darum delegieren wir jetzt an euch!\n\nAber wichtig!! Damit alles ganz natürlich vonstattengeht, darfst du mit niemandem teilen, was deine Rolle ist. Wenn du deine Aufgaben erfüllst, ohne dass es jemand erkennt, gibt es einen kleinen Preis am Ende!";
+
+  // Personalisierte Rollen. Der Code kommt aus dem QR-Code (?id=...).
+  // Bewusst keine Namen in dieser Datei, nur Titel und Aufgabe.
+  // "extra" ist die optionale Zusatzaufgabe (bei den Organisatorinnen).
   var TASKS = {
-    "fe2b104": { name:"Ange", text:"Sorge dafür, dass irgendwann alle zusammen denselben Song mitsingen." },
-    "fcifvzc": { name:"Holzi", text:"Starte irgendwann eine völlig unnötige Umfrage in der Gruppe. Es ist super wichtig für dich, von jedem eine Meinung zu bekommen." },
-    "t20i4z9": { name:"Bea", text:"Behaupte immer mal wieder „Das war die beste Entscheidung unseres Lebens!“" },
-    "w2kebk5": { name:"Crissy", text:"Erzähle einen Insider aus eurem Kegelclub völlig falsch, und beharre darauf, dass es sich so zugetragen hat." },
-    "f17k0la": { name:"Coco", text:"Platzhalter-Aufgabentext f\u00fcr Coco." },
-    "0ck9629": { name:"Judith", text:"Behaupte immer mal wieder „Ich glaube, ich brauche heute nicht so viel Alkohol.“" },
-    "y4bsezz": { name:"Lena", text:"… würde ich eine andere Keglerin auffällig oft für etwas loben." },
-    "l8ajihq": { name:"Marie", text:"Übernehme bei einem Gruppenfoto ganz selbstverständlich die Regie: „Wartet, ich stell euch mal kurz richtig hin.“" },
-    "4qpp0pp": { name:"Pia", text:"Tanze mindestens 30 Sekunden völlig ernst zu einem Lied, das niemand sonst tanzt." },
-    "5ccr6lu": { name:"Sally", text:"Sage bei mindestens 3 Gelegenheiten „Mädels, wir müssen langsam los.“" },
-    "evez8wb": { name:"Aufgabe 11", text:"Platzhalter-Aufgabentext f\u00fcr Evy." }
+    "fe2b104": {
+      title:"Chorleiterin",
+      text:"Zusammen singen ist doch das allerschönste. Sorge immer mal wieder dafür, dass alle zusammen denselben Song (mit)singen."
+    },
+    "fcifvzc": {
+      title:"Marktforscherin",
+      text:"Starte völlig unnötige Umfragen in der Gruppe. Es ist super wichtig für dich, von jedem eine Meinung zu bekommen."
+    },
+    "t20i4z9": {
+      title:"Motivationscoach",
+      text:"Behaupte immer mal wieder Dinge wie „Das war die beste Entscheidung unseres Lebens!“ oder „Genau diese Momente machen es doch aus!“"
+    },
+    "w2kebk5": {
+      title:"Archivarin",
+      text:"Erzähle einen Insider aus eurem Kegelclub völlig falsch, und beharre darauf, dass es sich so zugetragen hat."
+    },
+    "f17k0la": {
+      title:"Zollbeamtin",
+      text:"Du nimmst deine Aufgabe viel zu ernst. Kontrolliere im Laufe des Wochenendes das Gepäck der anderen und stelle verdächtige Fragen („Wofür brauchen Sie das?“).\n\nSuche dir dafür harmlose, aber auffällige „verdächtige Gegenstände“ heraus (zum Beispiel etwas das nicht zur Packliste passt) und erkläre sehr ernsthaft, warum genau dieser Gegenstand verdächtig ist. Frage immer freundlich nach, bevor du in eine Tasche schaust.",
+      extra:"Gib beim Essen eine völlig übertriebene Restaurantkritik ab."
+    },
+    "0ck9629": {
+      title:"Gesundheitsberaterin",
+      text:"Behaupte immer mal wieder „Ich glaube, ich brauche heute nicht so viel Alkohol.“"
+    },
+    "y4bsezz": {
+      title:"Kapitänin",
+      text:"Du bist die Chefin der Reise. Mache offizielle Durchsagen, verkünde Planänderungen und entscheide, wann die Passagiere bereit zum Abflug sind.
+      extra:"Lobe eine andere Keglerin auffällig oft für etwas."
+    },
+    "l8ajihq": {
+      title:"Social Media Managerin",
+      text:"Übernehme bei Gruppenfotos ganz selbstverständlich die Regie: „Wartet, ich stell euch mal kurz richtig hin.“ Stelle sicher, dass Bilder auch im Hochformat gemacht werden und dass alle Mahlzeiten dokumentiert sind."
+    },
+    "4qpp0pp": {
+      title:"Choreografin",
+      text:"Bewegung ist wichtig, und "
+    },
+    "5ccr6lu": {
+      title:"Projektmanagerin",
+      text:"Sage bei mehreren Gelegenheiten „Mädels, wir müssen langsam los.“"
+    },
+    "evez8wb": {
+      title:"Reiseleiterin",
+      text:"Gib regelmäßig improvisierte Erklärungen zur Umgebung und zu Sehenswürdigkeiten ab und sorge dafür, dass die Gruppe stets beisammen bleibt.",
+      extra:"Halte bei einer Gelegenheit einen völlig übertriebenen Trinkspruch."
+    }
   };
+
+  function escapeHtml(str){
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
 
   function getCodeFromUrl(){
     var params = new URLSearchParams(window.location.search);
@@ -128,9 +214,22 @@
       return;
     }
 
-    content.innerHTML =
-      '<p class="task-name">' + task.name + '</p>' +
-      '<p class="task-text">' + task.text + '</p>';
+    var html =
+      '<p class="intro" style="white-space:pre-line;">' + escapeHtml(INTRO) + '</p>' +
+      '<div class="divider"></div>' +
+      '<p class="lead-in">Du bist f\u00fcr das Wochenende\u2026</p>' +
+      '<h1 class="role-title">' + escapeHtml(task.title) + '</h1>' +
+      '<p class="task-text">' + escapeHtml(task.text) + '</p>';
+
+    if(task.extra){
+      html +=
+        '<div class="extra">' +
+          '<p class="extra-label">Zusatzaufgabe</p>' +
+          '<p class="task-text">' + escapeHtml(task.extra) + '</p>' +
+        '</div>';
+    }
+
+    content.innerHTML = html;
   }
 
   render();
